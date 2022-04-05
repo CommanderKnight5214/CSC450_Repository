@@ -16,7 +16,7 @@ public class chatClient
         //The part below is what I implemented, in a sence I the client to communicate to the server at the very least.
         clientOutput.println(localInput.nextLine());
         clientInput = new Scanner(s.getInputStream());
-        question = clientInput.nextLine();
-        System.out.println(question);
+        String ResponsiveText = clientInput.nextLine();
+        System.out.println(ResponsiveText);
     }
 }

@@ -2,6 +2,26 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 
+public final class Singleton {
+
+    //Singleton i found
+    private static volatile Singleton instance = null;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized(Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+
+        return instance;
+    }
+}
+
 public class ChatWorkerThread extends Thread
 {
     private Socket theClientSocket;
@@ -27,11 +47,12 @@ public class ChatWorkerThread extends Thread
 
     public void run()
     {
-        //this is what the thread does
         this.clientOutput.println("What is your name?");
         String name = clientInput.nextLine();
         System.out.println("read: " + name);
-        //I also implemented the statement below as well.
+        //Attempt at a implementation of this singleton.
+        Singleton thread = theClientSocket.getInstance();
+        this.clientOutput = new PrintStream(this.thread.getOutputStream());
         this.clientOutput.println("Your name is: " + name);
     }
 }
