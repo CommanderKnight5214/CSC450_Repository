@@ -1,0 +1,56 @@
+import java.io.PrintStream;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class ChatWorkerThread extends Thread
+{
+    private Socket theClientSocket;
+    private PrintStream clientOutput;
+    private Scanner clientInput;
+
+    public ChatWorkerThread(Socket theClientSocket)
+    {
+        try 
+        {
+            System.out.println("Connection Established...");
+            this.theClientSocket = theClientSocket;
+            this.clientOutput = new PrintStream(this.theClientSocket.getOutputStream());    
+            //System.out.println("About to add a printstream");
+            CORE.addClientThreadPrintStream(this.clientOutput);
+
+            this.clientInput = new Scanner(this.theClientSocket.getInputStream());
+        } 
+        catch (Exception e) 
+        {
+            System.err.println("Bad things happened in thread!!!!!");
+            e.printStackTrace();
+        }
+        
+    }
+
+    public void run()
+    {
+        //this is what the thread does
+        this.clientOutput.println("What is your name?");
+        String name = clientInput.nextLine();
+        CORE.broadcastMessage(name + " has joined!");
+        
+        String message;
+        while(true)
+        {
+            //I attempted to convert the message to a string, and asked if the string matched with /quit.
+            message = clientInput.nextLine();
+            String tempMessage = clientInput.toString();
+            System.out.println(tempMessage); 
+            if(tempMessage == "/quit")
+            {
+                CORE.broadcastMessage(name + " has left the server.");
+                CORE.RemoveClientThreadPrintStream(this.clientOutput);
+            }
+            else 
+            {
+                CORE.broadcastMessage(message);
+            }
+        }
+    }
+}
